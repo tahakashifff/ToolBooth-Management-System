@@ -1,31 +1,87 @@
 #include <iostream>
 #include <conio.h>
+#include <cstring>
 using namespace std;
 
 class TollBooth {
 
 private:
+    char *location;
+    double *history;
+    int capacity;
+    int used;
+   
     unsigned int totalCar;
     unsigned int paidCar;
     unsigned int nonPayingCar;
     double totalAmount;
+    static int boothCount;
 
 public:
     TollBooth();
-    TollBooth(unsigned int car, double amount) : totalCar(car), totalAmount(amount) {};
-
+    TollBooth(const char* loc, int cap = 10);
+    TollBooth(const TollBooth& other);
+    ~TollBooth();
     void payingCar();
     void nopayCar();
     void display(unsigned int& cars,unsigned int& paidCar,unsigned int& nonPayingcar, double& amount)const;
+    void setLocation(const char* loc);
+    static int getBoothCount();
 
 };
 
+int TollBooth::boothCount = 0;
+
 TollBooth::TollBooth()
 {
+    setLocation("Unknown");
+    capacity = 10;
+    history = new double[capacity];
     totalCar = 0;
     totalAmount = 0;
     paidCar = 0;
     nonPayingCar = 0;
+    boothCount++;
+}
+
+TollBooth::TollBooth(const char* loc, int cap = 10) 
+{
+    setLocation(loc);
+    if (cap > 0) {
+    capacity = cap;
+} else {
+    capacity = 10;
+}
+    history = new double[capacity];
+    used = 0;
+    totalCar = 0;
+    totalAmount = 0;
+    paidCar = 0;
+    nonPayingCar = 0;
+    boothCount++;
+}
+
+TollBooth::TollBooth(const TollBooth& other) 
+{
+    setLocation(other.location);
+
+    capacity = other.capacity;
+    used = other.used;
+    history = new double[capacity];
+    for (int i = 0; i < used; i++) history[i] = other.history[i];
+
+    totalCar = other.totalCar;
+    paidCar = other.paidCar;
+    nonPayingCar = other.nonPayingCar;
+    totalAmount = other.totalAmount;
+
+    boothCount++;
+}
+
+TollBooth::~TollBooth()
+{
+    delete[] location;
+    delete[] history;
 }
 
 void TollBooth::payingCar()
@@ -48,6 +104,23 @@ void TollBooth::display(unsigned int& cars,unsigned int& paid,unsigned int& unpa
     paid = paidCar;
     unpaid = nonPayingCar;
     
+}
+
+void TollBooth::setLocation(const char* loc)
+{
+    if(!loc)
+    {
+        loc = "Unknown";
+    }
+    else{
+        location = new char[strlen(loc)];
+        strcpy(location,loc);
+    }
+}
+
+int TollBooth::getBoothCount()
+{
+    return boothCount;
 }
 
 int main()
