@@ -12,6 +12,8 @@ private:
 
 public:
     TollBooth();
+    TollBooth(unsigned int car, double amount) : totalCar(car), totalAmount(amount) {};
+
     void payingCar();
     void nopayCar();
     void display(unsigned int& cars,unsigned int& paidCar,unsigned int& nonPayingcar, double& amount)const;
