@@ -1,37 +1,48 @@
 #include <iostream>
-#icnlude <string>   
 #include <conio.h>
+#include <string>
+#include <iomanip>
 #include <cstring>
 using namespace std;
 
 class TollBooth {
 
 private:
-    char *location;  // dynamic string for booth location
-    double *history;  // stores last few transaction amounts
+    char* location;  // dynamic string for booth location
+    double* history;  // stores last few transaction amounts
     int capacity;  // max history size(in this program it is set to 10)
     int used;  // how many history slots are currently used
-   
+
     unsigned int totalCar;
     unsigned int paidCar;
     unsigned int nonPayingCar;
     double totalAmount;
+    static int boothCount;  // keeps track of how many booth objects created
 
 public:
     TollBooth();
-    TollBooth(unsigned int car, double amount) : totalCar(car), totalAmount(amount) {};
-
+    TollBooth(const char* loc, int cap = 10);
+    TollBooth(const TollBooth& other);  // Copy Constructor
+    ~TollBooth();  // Destructor for dynamic memory 
     void payingCar();
     void nopayCar();
-    
-    static unsigned int totalBoothsCreated;
-    
-    void display(unsigned int& cars,unsigned int& paidCar,unsigned int& nonPayingcar, double& amount)const;
+    void display(unsigned int& cars, unsigned int& paidCar, unsigned int& nonPayingcar, double& amount)const;
+    void setLocation(const char* loc);
+    const char* getLocation()const;
+    int getHistoryCount()const;
+    double getHistory(int i)const;
+    static int getBoothCount();
+    TollBooth operator+(const TollBooth& other);
 
     friend void auditBooth(const TollBooth& b, unsigned int& cars, double& amount);
 
 };
 
+// Static variable shared by all objects of the class.
+// It keeps track of how many TollBooth objects have been created.
+int TollBooth::boothCount = 0;
+
+// Default Constructor
 TollBooth::TollBooth()
 {
     location = NULL;
@@ -47,17 +58,18 @@ TollBooth::TollBooth()
 }
 
 // Parameterized Constructor
-TollBooth::TollBooth(const char* loc, int cap) 
+TollBooth::TollBooth(const char* loc, int cap)
 {
     location = NULL;
     setLocation(loc);
 
     // valid capacity check
-    if (cap > 0) 
+    if (cap > 0)
     {
-    capacity = cap;
-    } else {
-    capacity = 10;
+        capacity = cap;
+    }
+    else {
+        capacity = 10;
     }
 
     history = new double[capacity];
@@ -73,7 +85,7 @@ TollBooth::TollBooth(const char* loc, int cap)
 // If we used the default copy constructor, both objects would point to the
 // same memory which could cause problems like double deletion.
 // So we perform a deep copy of the history array and location string.
-TollBooth::TollBooth(const TollBooth& other) 
+TollBooth::TollBooth(const TollBooth& other)
 {
     location = NULL;
     setLocation(other.location);
@@ -83,7 +95,7 @@ TollBooth::TollBooth(const TollBooth& other)
     history = new double[capacity];
     for (int i = 0; i < used; i++)
     {
-     history[i] = other.history[i];
+        history[i] = other.history[i];
     }
     totalCar = other.totalCar;
     paidCar = other.paidCar;
@@ -108,7 +120,7 @@ void TollBooth::payingCar()
     totalAmount += 50; // fixed toll price
 
     // store transaction in history
-    if(used < capacity)
+    if (used < capacity)
     {
         history[used] = 50;
         used++;
@@ -116,7 +128,7 @@ void TollBooth::payingCar()
     else
     {
         // shift history left if full
-        for(int i = 0; i < capacity - 1; i++)
+        for (int i = 0; i < capacity - 1; i++)
             history[i] = history[i + 1];
         history[capacity - 1] = 50;
     }
@@ -128,7 +140,7 @@ void TollBooth::nopayCar()
     totalCar += 1;
     nonPayingCar += 1;
 
-    if(used < capacity)
+    if (used < capacity)
     {
         history[used] = 0;
         used++;
@@ -136,40 +148,40 @@ void TollBooth::nopayCar()
     else
     {
         // again shifting when history is full
-        for(int i = 0; i < capacity - 1; i++)
+        for (int i = 0; i < capacity - 1; i++)
             history[i] = history[i + 1];
         history[capacity - 1] = 0;
     }
 }
 
-void TollBooth::display(unsigned int& cars,unsigned int& paid,unsigned int& unpaid, double& amount)const
+void TollBooth::display(unsigned int& cars, unsigned int& paid, unsigned int& unpaid, double& amount)const
 {
     cars = totalCar;
     amount = totalAmount;
     paid = paidCar;
     unpaid = nonPayingCar;
-    
+
 }
 
 // sets location dynamically
 void TollBooth::setLocation(const char* loc)
 {
-    if(location)
+    if (location)
     {
         delete[] location;  // free previous memory
     }
 
-    if(!loc)
+    if (!loc)
     {
         loc = "Unknown";
     }
-        location = new char[strlen(loc) + 1];
-        strcpy(location,loc);
+    location = new char[strlen(loc) + 1];
+    strcpy_s(location, strlen(loc) + 1, loc);
 }
 
 // returns location
 const char* TollBooth::getLocation()const
-{   
+{
     return location;
 }
 
@@ -200,7 +212,7 @@ TollBooth TollBooth::operator+(const TollBooth& other)
 // Friend function used for auditing purposes.
 // It can access private members of TollBooth directly without
 // using getter functions.
-void auditBooth(const TollBooth& b,unsigned int& cars,double& amount)
+void auditBooth(const TollBooth& b, unsigned int& cars, double& amount)
 {
     cars = b.totalCar;
     amount = b.totalAmount;
@@ -213,97 +225,129 @@ int TollBooth::getBoothCount()
 
 int main()
 {
-    TollBooth t1;
-    char choice;
+    int n;
 
+    cout << "\n";
+    cout << "================================================" << endl;
+    cout << "   === TOLL BOOTH MANAGEMENT SYSTEM ===" << endl;
+    cout << "================================================" << endl;
+    cout << endl;
 
-    while(true)
-{
-    cout << "\nEnter booth number (1-" << n << "): ";
-    cin >> boothIndex;
-    if(cin.fail() || boothIndex < 1 || boothIndex > n)
+    cout << "Enter number of Toll Booths: ";
+    cin >> n;
+
+    // input validation check
+    while (cin.fail() || n < 1)
     {
         cin.clear();
         cin.ignore(1000, '\n');
-        cout << "Invalid booth!" << endl;
-        continue;
+        cout << "Invalid input. Enter a positive number: ";
+        cin >> n;
     }
+    cin.ignore();
 
-    cout << "\nInside Booth " << boothIndex << " (" << booths[boothIndex-1].getLocation() << ")" << endl;
-    cout << "Press Y = Paying Car"<<endl;
-    cout << "Press N = Non-Paying Car"<<endl;
-    cout << "Press BACKSPACE = Return to booth menu"<<endl;
-    cout << "Press ESC = Exit program"<<endl;
+    // dynamically creating booths
+    TollBooth* booths = new TollBooth[n];
 
-    while(true)
+    char loc[50];
+
+    // taking locations names from user
+    for (int i = 0; i < n; i++)
     {
-        char choice = _getch();  // instant key input , no need to use cin and enter
+        cout << "Enter location for Booth " << i + 1 << ": ";
+        cin.getline(loc, 50);
 
-        if(choice == 27)
-        {           
-            cout << "Program Terminated."<<endl;
-            goto endProgram;  // quick exit
-        }
-        else if(choice == 8)
+        booths[i].setLocation(loc);
+    }
+
+    int boothIndex;
+    char choice;
+
+
+    while (true)
+    {
+        cout << "\nEnter booth number (1-" << n << "): ";
+        cin >> boothIndex;
+        if (cin.fail() || boothIndex < 1 || boothIndex > n)
         {
-            cout << "Returning to booth menu..."<<endl;
-            break;
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Invalid booth!" << endl;
+            continue;
         }
-        else if(choice == 'Y' || choice == 'y')
+
+        cout << "\nInside Booth " << boothIndex << " (" << booths[boothIndex - 1].getLocation() << ")" << endl;
+        cout << "Press Y = Paying Car" << endl;
+        cout << "Press N = Non-Paying Car" << endl;
+        cout << "Press BACKSPACE = Return to booth menu" << endl;
+        cout << "Press ESC = Exit program" << endl;
+
+        while (true)
         {
-            booths[boothIndex-1].payingCar();
-            cout << "Paying car counted."<<endl;
-        }
-        else if(choice == 'N' || choice == 'n')
-        {
-            booths[boothIndex-1].nopayCar();
-            cout << "Non-paying car counted."<<endl;
-        }
-        else
-        {
-            cout << "Invalid key!"<<endl;
+            char choice = _getch();  // instant key input , no need to use cin and enter
+
+            if (choice == 27)
+            {
+                cout << "Program Terminated." << endl;
+                goto endProgram;  // quick exit
+            }
+            else if (choice == 8)
+            {
+                cout << "Returning to booth menu..." << endl;
+                break;
+            }
+            else if (choice == 'Y' || choice == 'y')
+            {
+                booths[boothIndex - 1].payingCar();
+                cout << "Paying car counted." << endl;
+            }
+            else if (choice == 'N' || choice == 'n')
+            {
+                booths[boothIndex - 1].nopayCar();
+                cout << "Non-paying car counted." << endl;
+            }
+            else
+            {
+                cout << "Invalid key!" << endl;
+            }
         }
     }
-}
 
 endProgram:
 
     // showing final report of each booth
-    for (int i=0;i<n;i++)
+    for (int i = 0; i < n; i++)
     {
         unsigned int cars, paid, unpaid;
         double amount;
 
-    booths[i].display(cars,paid,unpaid,amount);
+        booths[i].display(cars, paid, unpaid, amount);
 
-    cout << "=== Booth " << i+1 << " Report ===" << endl;
-    cout << "Total cars: " << cars << endl;
-    cout << "Cars that paid: " << paid << endl;
-    cout << "Cars that did not paid: " << unpaid << endl;
-    cout << "Total amount: $" << amount << endl;
+        cout << "\n================================================" << endl;
+        cout << "        BOOTH " << i + 1 << " - " << booths[i].getLocation() << endl;
+        cout << "================================================" << endl;
+        cout << "Total cars: " << cars << " | Paid: " << paid << " | Not Paid: " << unpaid << endl;
+        cout << "Total amount: $" << fixed << setprecision(2) << amount << endl;
 
-    int count = booths[i].getHistoryCount();
-
-        cout << "Transaction History: ";
-        for(int j=0; j<count; j++)
-            cout << booths[i].getHistory(j) << " ";
+        int count = booths[i].getHistoryCount();
+        cout << "History (" << count << "): ";
+        for (int j = 0; j < count; j++)
+            cout << "$" << fixed << setprecision(0) << booths[i].getHistory(j) << " ";
         cout << endl;
 
         // using friend function for audit
         unsigned int auditCars;
         double auditAmount;
 
-        auditBooth(booths[i],auditCars,auditAmount);
+        auditBooth(booths[i], auditCars, auditAmount);
 
-        cout << "Audit -> Cars: "
-             << auditCars
-             << " | Amount: "
-             << auditAmount << endl;
+        cout << "Audit: " << auditCars << " cars, $" << fixed << setprecision(2) << auditAmount << endl;
+        cout << "================================================" << endl;
     }
 
-    cout << "Total Booth Objects Created: "<< TollBooth::getBoothCount() << endl;
+    cout << "Total Booth Objects Created: " << TollBooth::getBoothCount() << endl;
 
     delete[] booths;   // freeing booth array
 
     return 0;
-}  
+}
