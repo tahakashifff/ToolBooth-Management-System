@@ -1,4 +1,5 @@
 #include <iostream>
+#icnlude <string>   
 #include <conio.h>
 using namespace std;
 
@@ -9,16 +10,26 @@ private:
     unsigned int paidCar;
     unsigned int nonPayingCar;
     double totalAmount;
+    
+    
 
 public:
     TollBooth();
-    TollBooth(unsigned int car, double amount) : totalCar(car), totalAmount(amount) {};
-
+    
     void payingCar();
     void nopayCar();
+    
+    static unsigned int totalBoothsCreated;
+    
     void display(unsigned int& cars,unsigned int& paidCar,unsigned int& nonPayingcar, double& amount)const;
+    
+    ~TollBooth()
+    {
 
+    }
 };
+
+
 
 TollBooth::TollBooth()
 {
@@ -52,7 +63,14 @@ void TollBooth::display(unsigned int& cars,unsigned int& paid,unsigned int& unpa
 
 int main()
 {
-    TollBooth t1;
+    int n;
+    cout << "Enter how many tollbooths you want to create: ";
+    cin >> n;
+
+    TollBooth* booths = new TollBooth[n];
+
+    cout << "Total booths created so far: " << TollBooth::getTotalBoothsCreated() << "\n";
+
     char choice;
     unsigned int cars,paid,unpaid;
     double amount;
