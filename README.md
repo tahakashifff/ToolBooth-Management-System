@@ -1,6 +1,4 @@
-README.md
 Toll Booth Management System 🚧
-
 A C++ Toll Booth Management System that demonstrates important Object-Oriented Programming (OOP) concepts, dynamic memory management, constructors/destructors, copy constructors, operator overloading, static members, friend functions, and dynamic arrays.
 
 The program allows users to manage multiple toll booths, record paying and non-paying vehicles, maintain transaction history, and generate a final report for each booth.
@@ -25,7 +23,6 @@ Use keyboard controls for quick vehicle entry.
 Dynamically allocate and deallocate booth objects.
 OOP Concepts Demonstrated
 1. Encapsulation
-
 The class keeps its data members private and provides public member functions to access and modify the required information.
 
 private:
@@ -35,7 +32,6 @@ private:
     int used;
 
 2. Constructors
-
 The program contains:
 
 Default constructor
@@ -46,7 +42,6 @@ TollBooth(const char* loc, int cap = 10);
 TollBooth(const TollBooth& other);
 
 3. Destructor
-
 The destructor releases dynamically allocated memory:
 
 TollBooth::~TollBooth()
@@ -56,7 +51,6 @@ TollBooth::~TollBooth()
 }
 
 4. Dynamic Memory Allocation
-
 The program dynamically allocates memory for:
 
 Booth locations
@@ -65,24 +59,20 @@ The array of toll booth objects
 TollBooth* booths = new TollBooth[n];
 
 5. Deep Copy
-
 Because TollBooth uses dynamic memory, a custom copy constructor is implemented to prevent multiple objects from sharing the same memory.
 
 TollBooth::TollBooth(const TollBooth& other)
 
 6. Static Data Member
-
 boothCount keeps track of the number of TollBooth objects created.
 
 static int boothCount;
-
 
 It can be accessed through:
 
 TollBooth::getBoothCount();
 
 7. Friend Function
-
 The auditBooth() function is declared as a friend so that it can directly access private members of TollBooth.
 
 friend void auditBooth(
@@ -92,11 +82,9 @@ friend void auditBooth(
 );
 
 8. Operator Overloading
-
 The + operator combines the statistics of two toll booths.
 
 TollBooth operator+(const TollBooth& other);
-
 
 For example, it combines:
 
@@ -105,17 +93,14 @@ Paying cars
 Non-paying cars
 Total amount
 9. Dynamic Transaction History
-
 Each booth maintains a history of transactions. A paying car stores 50, while a non-paying car stores 0.
 
 When the history becomes full, the oldest transaction is removed and the newest transaction is added.
 
 How the Program Works
-
 When the program starts, the user is asked to enter the number of toll booths.
 
 Enter number of Toll Booths: 3
-
 
 The user then provides a location for each booth:
 
@@ -123,11 +108,9 @@ Enter location for Booth 1: Islamabad
 Enter location for Booth 2: Lahore
 Enter location for Booth 3: Rawalpindi
 
-
 After that, the user selects a booth:
 
 Enter booth number (1-3):
-
 
 Inside the selected booth, the following controls are available:
 
@@ -142,7 +125,6 @@ A paying car increases the total amount by $50.
 A non-paying car increases the vehicle count but does not increase the collected amount.
 
 Example
-
 A booth receives the following vehicles:
 
 Y
@@ -150,7 +132,6 @@ Y
 N
 Y
 N
-
 
 The resulting statistics would be approximately:
 
@@ -162,7 +143,6 @@ Total amount: $150.00
 History (5): $50 $50 $0 $50 $0
 
 Final Report
-
 When the user presses ESC, the program generates a report for every booth.
 
 Example:
@@ -176,23 +156,19 @@ History (5): $50 $50 $0 $50 $0
 Audit: 5 cars, $150.00
 ================================================
 
-
 At the end, the program also displays the number of TollBooth objects created:
 
 Total Booth Objects Created: 4
 
-
 The number may be higher than the number of booths entered because the overloaded + operator creates a temporary TollBooth object when used.
 
 Requirements
-
 To compile and run this project, you need:
 
 C++ compiler
 Windows environment recommended
 Support for <conio.h> and _getch()
 Standard C++ libraries
-
 The program uses:
 
 #include <iostream>
@@ -200,12 +176,10 @@ The program uses:
 #include <iomanip>
 #include <cstring>
 
-
 Note: <conio.h> and _getch() are commonly available with Microsoft Visual C++/Visual Studio but are not part of the standard C++ library. Therefore, the program may require modification when compiling with some Linux/macOS compilers.
 
 Compilation
 Visual Studio
-
 Create a C++ Console Application and add the source code to the project.
 
 Build and run the project using:
@@ -213,11 +187,9 @@ Build and run the project using:
 Ctrl + F5
 
 MinGW / g++
-
 On a Windows environment with a compatible MinGW compiler, you can try:
 
 g++ main.cpp -o TollBooth
-
 
 Then run:
 
@@ -230,11 +202,9 @@ TollBooth-Management-System/
 └── README.md
 
 Class Overview
-
 The main class in the project is:
 
 class TollBooth
-
 
 Important member functions include:
 
@@ -249,28 +219,23 @@ static int getBoothCount();
 TollBooth operator+(const TollBooth& other);
 
 Memory Management
-
 The program uses dynamic memory and therefore explicitly releases allocated resources.
 
 Location:
 
 location = new char[strlen(loc) + 1];
 
-
 History:
 
 history = new double[capacity];
-
 
 Booth array:
 
 TollBooth* booths = new TollBooth[n];
 
-
 The booth array is released at the end:
 
 delete[] booths;
-
 
 The destructor releases each booth's internal dynamic memory:
 
@@ -278,7 +243,6 @@ delete[] location;
 delete[] history;
 
 Learning Objectives
-
 This project is useful for practicing:
 
 Classes and objects
@@ -295,7 +259,6 @@ Input validation
 Character-based keyboard input
 Basic memory management in C++
 Future Improvements
-
 Possible improvements include:
 
 Add a configurable toll price instead of a fixed $50.
@@ -310,9 +273,7 @@ Add statistics such as average toll collected per paying vehicle.
 Allow users to reset individual booth statistics.
 Add a search function for booth locations.
 Author
-
 Developed as a C++ Object-Oriented Programming project demonstrating practical use of classes, dynamic memory, constructors, destructors, friend functions, static members, and operator overloading.
 
 License
-
 This project is available for educational and learning purposes.
